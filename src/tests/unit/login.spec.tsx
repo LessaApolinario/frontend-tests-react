@@ -24,4 +24,20 @@ describe("Login tests", () => {
       expect(passwordInput.type).toBe("password");
     });
   });
+
+  it("should change login button text", () => {
+    const { container } = render(
+      <BrowserRouter>
+        <LoginPage />
+      </BrowserRouter>,
+    );
+
+    const loginButton = container.querySelector(
+      "button[type=submit]",
+    ) as HTMLButtonElement;
+
+    expect(loginButton.textContent).toBe("Entrar");
+    fireEvent.click(loginButton);
+    expect(loginButton.textContent).toBe("Entrando");
+  });
 });
