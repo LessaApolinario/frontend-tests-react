@@ -2,23 +2,44 @@ import { useRef, useState } from "react";
 import { BiSolidHide, BiSolidShow } from "react-icons/bi";
 import { useNavigate } from "react-router-dom";
 import { EmailOrPasswordInvalidError } from "../../../../core/errors/EmailOrPasswordInvalidError";
+import { useNotification } from "@/hooks/useNotification";
 
 export function LoginPage() {
+  const { notifyError, notifySuccess } = useNotification();
   const emailRef = useRef<HTMLInputElement>(null);
   const passwordRef = useRef<HTMLInputElement>(null);
   const [isPasswordHidden, setIsPasswordHidden] = useState(true);
+  const [isSubmittingLoginForm, setIsSubmittingLoginForm] = useState(false);
   const navigate = useNavigate();
 
-  function handleLogin(event: React.FormEvent) {
-    event.preventDefault();
+  async function delay() {
+    const THREE_SECONDS = 3000;
+    await new Promise((resolve) => setTimeout(resolve, THREE_SECONDS));
+  }
 
-    if (
-      emailRef.current?.value === "admin@email.com" &&
-      passwordRef.current?.value === "123456"
-    ) {
-      navigate("/dashboard");
-    } else {
-      throw new EmailOrPasswordInvalidError();
+  async function handleLogin(event: React.FormEvent) {
+    try {
+      event.preventDefault();
+      setIsSubmittingLoginForm(true);
+
+      await delay();
+
+      if (
+        emailRef.current?.value === "admin@email.com" &&
+        passwordRef.current?.value === "123456"
+      ) {
+        navigate("/dashboard");
+        notifySuccess("Login realizado com sucesso");
+      } else {
+        throw new EmailOrPasswordInvalidError();
+      }
+    } catch (error) {
+      console.error(error);
+      notifyError(
+        error instanceof Error ? error.message : "Erro ao realizar login",
+      );
+    } finally {
+      setIsSubmittingLoginForm(false);
     }
   }
 
@@ -79,7 +100,7 @@ export function LoginPage() {
           type="submit"
           className="w-full cursor-pointer rounded-lg bg-blue-800 p-2 text-center text-lg font-bold text-white"
         >
-          Entrar
+          {isSubmittingLoginForm ? "Entrando" : "Entrar"}
         </button>
       </form>
     </main>

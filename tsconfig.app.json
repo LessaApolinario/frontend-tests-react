@@ -25,7 +25,8 @@
 
     "paths": {
       "@/layouts/*": ["./src/ui/frontend/layouts/*"],
-      "@/pages/*": ["./src/ui/frontend/pages/*"]
+      "@/pages/*": ["./src/ui/frontend/pages/*"],
+      "@/hooks/*": ["./src/ui/frontend/hooks/*"]
     }
   },
   "include": ["src"]
