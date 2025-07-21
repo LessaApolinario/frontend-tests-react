@@ -1,38 +1,28 @@
+import { useLogin, type AuthCredentials } from "@/hooks/useLogin";
+import { useNotification } from "@/hooks/useNotification";
 import { useRef, useState } from "react";
 import { BiSolidHide, BiSolidShow } from "react-icons/bi";
-import { useNavigate } from "react-router-dom";
-import { EmailOrPasswordInvalidError } from "../../../../core/errors/EmailOrPasswordInvalidError";
-import { useNotification } from "@/hooks/useNotification";
 
 export function LoginPage() {
-  const { notifyError, notifySuccess } = useNotification();
   const emailRef = useRef<HTMLInputElement>(null);
   const passwordRef = useRef<HTMLInputElement>(null);
   const [isPasswordHidden, setIsPasswordHidden] = useState(true);
   const [isSubmittingLoginForm, setIsSubmittingLoginForm] = useState(false);
-  const navigate = useNavigate();
-
-  async function delay() {
-    const THREE_SECONDS = 3000;
-    await new Promise((resolve) => setTimeout(resolve, THREE_SECONDS));
-  }
+  const { notifyError, notifySuccess } = useNotification();
+  const { login } = useLogin();
 
   async function handleLogin(event: React.FormEvent) {
     try {
       event.preventDefault();
       setIsSubmittingLoginForm(true);
 
-      await delay();
+      const credentials: AuthCredentials = {
+        email: emailRef.current?.value ?? "",
+        password: passwordRef.current?.value ?? "",
+      };
 
-      if (
-        emailRef.current?.value === "admin@email.com" &&
-        passwordRef.current?.value === "123456"
-      ) {
-        navigate("/dashboard");
-        notifySuccess("Login realizado com sucesso");
-      } else {
-        throw new EmailOrPasswordInvalidError();
-      }
+      await login(credentials);
+      notifySuccess("Login realizado com sucesso");
     } catch (error) {
       console.error(error);
       notifyError(
