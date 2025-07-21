@@ -69,16 +69,19 @@ export function LoginPage() {
             <input
               ref={passwordRef}
               id="password-input"
+              data-testid="password-input"
               className="text-md w-full rounded-lg border-2 border-blue-800 p-2 text-blue-800 outline-blue-800"
               type={isPasswordHidden ? "password" : "text"}
             />
             {isPasswordHidden ? (
               <BiSolidShow
+                data-testid="show-password-btn"
                 onClick={togglePasswordVisibility}
                 className="cursor-pointer text-3xl text-blue-800"
               />
             ) : (
               <BiSolidHide
+                data-testid="hide-password-btn"
                 onClick={togglePasswordVisibility}
                 className="cursor-pointer text-3xl text-blue-800"
               />
