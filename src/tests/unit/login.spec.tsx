@@ -12,13 +12,9 @@ import {
 } from "@testing-library/react";
 import type { ReactNode } from "react";
 import { MemoryRouter, Route, Routes } from "react-router-dom";
-import { afterEach, describe, expect, it, vi } from "vitest";
+import { describe, expect, it } from "vitest";
 
 describe("Login tests", () => {
-  afterEach(() => {
-    vi.clearAllMocks();
-  });
-
   it("should change password visibility", async () => {
     render(
       <MemoryRouter>
