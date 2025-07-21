@@ -1,22 +1,29 @@
+import { LocationDisplay } from "@/components/LocationDisplay";
+import { EmailOrPasswordInvalidError } from "@/errors/EmailOrPasswordInvalidError";
 import { useLogin, type AuthCredentials } from "@/hooks/useLogin";
 import { LoginPage } from "@/pages/login";
 import {
+  act,
   fireEvent,
   render,
+  renderHook,
   screen,
   waitFor,
-  renderHook,
 } from "@testing-library/react";
-import { BrowserRouter } from "react-router-dom";
-import { describe, expect, it } from "vitest";
-import { EmailOrPasswordInvalidError } from "../../core/errors/EmailOrPasswordInvalidError";
+import type { ReactNode } from "react";
+import { MemoryRouter, Route, Routes } from "react-router-dom";
+import { afterEach, describe, expect, it, vi } from "vitest";
 
 describe("Login tests", () => {
+  afterEach(() => {
+    vi.clearAllMocks();
+  });
+
   it("should change password visibility", async () => {
     render(
-      <BrowserRouter>
+      <MemoryRouter>
         <LoginPage />
-      </BrowserRouter>,
+      </MemoryRouter>,
     );
     const passwordInput = screen.getByTestId(
       "password-input",
@@ -35,9 +42,9 @@ describe("Login tests", () => {
 
   it("should change login button text", () => {
     const { container } = render(
-      <BrowserRouter>
+      <MemoryRouter>
         <LoginPage />
-      </BrowserRouter>,
+      </MemoryRouter>,
     );
 
     const loginButton = container.querySelector(
@@ -51,7 +58,7 @@ describe("Login tests", () => {
 
   it("should not login", async () => {
     const { result } = renderHook(() => useLogin(), {
-      wrapper: ({ children }) => <BrowserRouter>{children}</BrowserRouter>,
+      wrapper: ({ children }) => <MemoryRouter>{children}</MemoryRouter>,
     });
     const login = result.current.login;
 
@@ -63,5 +70,37 @@ describe("Login tests", () => {
     await expect(login(invalidPayload)).rejects.toThrow(
       EmailOrPasswordInvalidError,
     );
+  });
+
+  it("should login", async () => {
+    const routerWrapper = ({ children }: { children: ReactNode }) => {
+      return (
+        <MemoryRouter initialEntries={["/"]}>
+          <Routes>
+            <Route path="/" element={children} />
+            <Route path="/dashboard" element={<LocationDisplay />} />
+          </Routes>
+        </MemoryRouter>
+      );
+    };
+    const loginHook = renderHook(() => useLogin(), {
+      wrapper: routerWrapper,
+    });
+
+    const payload: AuthCredentials = {
+      email: "admin@email.com",
+      password: "123456",
+    };
+
+    let loginResult: void;
+
+    await act(async () => {
+      loginResult = await loginHook.result.current.login(payload);
+    });
+
+    expect(loginResult).toBeUndefined();
+
+    const locationDiv = screen.getByTestId("location");
+    expect(locationDiv.textContent).toBe("/dashboard");
   });
 });

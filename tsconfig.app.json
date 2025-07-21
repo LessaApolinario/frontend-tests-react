@@ -26,7 +26,9 @@
     "paths": {
       "@/layouts/*": ["./src/ui/frontend/layouts/*"],
       "@/pages/*": ["./src/ui/frontend/pages/*"],
-      "@/hooks/*": ["./src/ui/frontend/hooks/*"]
+      "@/components/*": ["./src/ui/frontend/components/*"],
+      "@/hooks/*": ["./src/ui/frontend/hooks/*"],
+      "@/errors/*": ["./src/core/errors/*"]
     }
   },
   "include": ["src"]

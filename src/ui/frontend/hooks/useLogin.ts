@@ -1,5 +1,5 @@
+import { EmailOrPasswordInvalidError } from "@/errors/EmailOrPasswordInvalidError";
 import { useNavigate } from "react-router-dom";
-import { EmailOrPasswordInvalidError } from "../../../core/errors/EmailOrPasswordInvalidError";
 
 export interface AuthCredentials {
   email: string;
