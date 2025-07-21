@@ -1,7 +1,15 @@
+import { useLogin, type AuthCredentials } from "@/hooks/useLogin";
 import { LoginPage } from "@/pages/login";
-import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import {
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+  renderHook,
+} from "@testing-library/react";
 import { BrowserRouter } from "react-router-dom";
 import { describe, expect, it } from "vitest";
+import { EmailOrPasswordInvalidError } from "../../core/errors/EmailOrPasswordInvalidError";
 
 describe("Login tests", () => {
   it("should change password visibility", async () => {
@@ -39,5 +47,21 @@ describe("Login tests", () => {
     expect(loginButton.textContent).toBe("Entrar");
     fireEvent.click(loginButton);
     expect(loginButton.textContent).toBe("Entrando");
+  });
+
+  it("should not login", async () => {
+    const { result } = renderHook(() => useLogin(), {
+      wrapper: ({ children }) => <BrowserRouter>{children}</BrowserRouter>,
+    });
+    const login = result.current.login;
+
+    const invalidPayload: AuthCredentials = {
+      email: "my-email@email.com",
+      password: "some-pass",
+    };
+
+    await expect(login(invalidPayload)).rejects.toThrow(
+      EmailOrPasswordInvalidError,
+    );
   });
 });
